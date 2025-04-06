@@ -36,7 +36,9 @@ async function setupDB() {
                 username VARCHAR(50) UNIQUE NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )`;
+        await sql`
             CREATE TABLE routes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -46,10 +48,11 @@ async function setupDB() {
                 operator TEXT,
                 length_km REAL,
                 game TEXT, -- e.g. TSW2, TSW3, TSW4
-                release_date DATE)`;
+                release_date DATE
+            )`;
         console.log("USERS ADDED TO DB");
-        } catch (error) {
-    console.error(error);
+    } catch (error) {
+        console.error(error);
     }
 }
 setupDB();
