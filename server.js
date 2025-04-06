@@ -132,13 +132,10 @@ app.get("/routes", async (req, res) => {
     }
 });
 
-function shutdown() {
-    console.log("Shutting down server...");
-    server.close(() => {
-        console.log("Server closed.");
-        process.exit(0);
+if (!process.env.VERCEL && !process.env.NOW_REGION) {
+    const PORT = process.env.PORT || 8088;
+    app.listen(PORT, () => {
+        console.log(`✅ Server running on http://localhost:${PORT}`);
     });
 }
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-process.on("message", (msg) => msg === "shutdown" && shutdown());
+export default app;
