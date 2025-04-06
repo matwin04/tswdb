@@ -122,9 +122,14 @@ async function setupDB() {
 setupDB();
 app.get("/", (req, res) => res.render("index"));
 app.get("/add", (req, res) => res.render("add"));
-app.get("/routes", (req, res) => res.render("routes"));
-const server = app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+app.get("/routes", async (req, res) => {
+    try {
+        const rows = await sql`SELECT * FROM routes ORDER BY id`;
+        res.render("routes", { rows });
+    } catch (err) {
+        console.error("Error loading routes:", err);
+        res.status(500).send("Error loading routes");
+    }
 });
 
 function shutdown() {
