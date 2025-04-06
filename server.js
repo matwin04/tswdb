@@ -38,21 +38,85 @@ async function setupDB() {
                 password_hash TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )`;
+
         await sql`
-            CREATE TABLE routes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS routes (
+                id SERIAL PRIMARY KEY,
                 name TEXT NOT NULL,
                 code TEXT UNIQUE,
                 region TEXT,
                 country TEXT,
                 operator TEXT,
                 length_km REAL,
-                game TEXT, -- e.g. TSW2, TSW3, TSW4
+                game TEXT,
                 release_date DATE
             )`;
-        console.log("USERS ADDED TO DB");
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS stations (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                code TEXT UNIQUE,
+                route_id INTEGER REFERENCES routes(id),
+                latitude REAL,
+                longitude REAL
+            )`;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS timetables (
+                id SERIAL PRIMARY KEY,
+                route_id INTEGER REFERENCES routes(id),
+                name TEXT NOT NULL,
+                created_by TEXT,
+                date_created DATE DEFAULT CURRENT_DATE
+            )`;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS trains (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                model TEXT,
+                operator TEXT,
+                max_speed_kmh INTEGER,
+                power_type TEXT,
+                year_built INTEGER
+            )`;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS services (
+                id SERIAL PRIMARY KEY,
+                timetable_id INTEGER REFERENCES timetables(id),
+                train_id INTEGER REFERENCES trains(id),
+                start_station_id INTEGER REFERENCES stations(id),
+                end_station_id INTEGER REFERENCES stations(id),
+                departure_time TEXT,
+                arrival_time TEXT,
+                service_type TEXT,
+                notes TEXT
+            )`;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS platforms (
+                id SERIAL PRIMARY KEY,
+                station_id INTEGER REFERENCES stations(id),
+                platform_number TEXT,
+                length_m INTEGER,
+                accessible BOOLEAN DEFAULT FALSE
+            )`;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS train_events (
+                id SERIAL PRIMARY KEY,
+                service_id INTEGER REFERENCES services(id),
+                station_id INTEGER REFERENCES stations(id),
+                event_type TEXT,
+                timestamp TEXT,
+                notes TEXT
+            )`;
+
+        console.log("All TSWDB tables created.");
     } catch (error) {
-        console.error(error);
+        console.error("DB setup failed:", error);
     }
 }
 setupDB();
