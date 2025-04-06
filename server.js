@@ -5,9 +5,10 @@ import { engine } from "express-handlebars";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import dotenv from "dotenv";
-
+import postgres from "postgres";
 // Load environment variables
 dotenv.config();
+const sql = postgres(process.env.DATABASE_URL,{ssl:"require"});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,9 +27,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
+async function setupDB() {
+    console.log("Starting DB...");
+    try {
+        await sql`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                email VARCHAR(100) UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
+
+        console.log("USERS ADDED TO DB");
+        } catch (error) {
+    console.error(error);
+    }
+}
+setupDB();
 app.get("/", (req, res) => res.render("index"));
 app.get("/add", (req, res) => res.render("add"));
-
+app.get("/routes", (req, res) => res.render("routes"));
 const server = app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
