@@ -136,7 +136,7 @@ app.get("/routes/:id", async (req, res) => {
     try {
         const rows = await sql`
             SELECT * FROM stations
-            WHERE ${routeId} = ANY(route_ids)
+            WHERE route_ids @> ARRAY[${routeId}]::int[]
             ORDER BY id
         `;
         res.render("routemap", { rows });
