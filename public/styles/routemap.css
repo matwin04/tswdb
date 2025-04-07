@@ -1,0 +1,25 @@
+.route-line {
+    position: relative;
+    margin-left: 30px;
+    padding-left: 40px;
+    border-left: 4px solid #1E60C7; /* LINE COLOR (e.g. blue) */
+}
+
+.station {
+    position: relative;
+    margin: 20px 0;
+    padding-left: 10px;
+}
+
+.station::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 0.4em;
+    width: 12px;
+    height: 12px;
+    background-color: #1E60C7;
+    border: 4px solid #1E60C7;
+    border-radius: 50%;
+    z-index: 1;
+}
