@@ -5,10 +5,11 @@
 </head>
 <body class="container mt-4">
     <h1 class="mb-4">Routes</h1>
-    <a href="/">← Back</a>
+    <a class="btn btn-secondary" href="/">← Back</a>
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>View </th>
                 <th>Name</th>
                 <th>Code</th>
                 <th>Region</th>
@@ -22,6 +23,8 @@
         <tbody>
             {{#each rows}}
             <tr>
+                <td>
+                    <a class="btn btn-secondary" href="/routes/{{id}}">{{id}}</a></td>
                 <td>{{name}}</td>
                 <td>{{code}}</td>
                 <td>{{region}}</td>

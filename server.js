@@ -131,6 +131,20 @@ app.get("/routes", async (req, res) => {
         res.status(500).send("Error loading routes");
     }
 });
+app.get("/routes/:id", async (req, res) => {
+    const routeId = parseInt(req.params.id);
+    try {
+        const rows = await sql`
+            SELECT * FROM stations
+            WHERE ${routeId} = ANY(route_ids)
+            ORDER BY id
+        `;
+        res.render("routemap", { rows });
+    } catch (err) {
+        console.error("Error loading route map:", err);
+        res.status(500).send("Error loading route map");
+    }
+});
 
 if (!process.env.VERCEL && !process.env.NOW_REGION) {
     const PORT = process.env.PORT || 8088;
